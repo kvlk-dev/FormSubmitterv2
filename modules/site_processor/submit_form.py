@@ -70,8 +70,7 @@ class SubmitForm:
                 return "Success", None
         except Exception as e:
             logging.error(f"Ошибка при отправке формы: {str(e)}")
-            return "Error", "Не удалось отправить форму"
-        exit()
+            pass
         try:
             # ищем form input[type="submit"] или button[type="submit"] внутри self.form
             submit_button = self.form.find_element(By.XPATH, ".//input[@type='submit'] | .//button[@type='submit]")
@@ -84,7 +83,8 @@ class SubmitForm:
                 return "Success", None
         except TimeoutException:
             logging.error(f"Не удалось отправить форму (timeout): возможно, проблема с сайтом.")
-            return "Error", "Timeout при отправке формы"
+            pass
+            #return "Error", "Timeout при отправке формы"
 
         try:
             # Уточняем локаторы кнопки отправки, добавляем специфические для
@@ -134,7 +134,6 @@ class SubmitForm:
                 time.sleep(random.uniform(3, 5))
                 if self.is_form_successful():
                     return "Success", None
-            #    return "Success", None
             else:
                 return "Error: Ошибка отправки формы", None, None
 
@@ -217,7 +216,7 @@ class SubmitForm:
                                     logging.info(f"Ошибка '{error_text}' исправлена. Повторная отправка...")
                                     submit_button.click()  # Повторно кликаем по кнопке
                                     time.sleep(random.uniform(3, 5))  # Ждем
-                                    return self.submit_form()  # Рекурсивно вызываем submit_form, чтобы проверить,
+                                    return self.run()  # Рекурсивно вызываем submit_form, чтобы проверить,
                                     # что ошибка исправлена.
                                 else:
                                     logging.warning(f"Не удалось исправить ошибку '{error_text}'.")

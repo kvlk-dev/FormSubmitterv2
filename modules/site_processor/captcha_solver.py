@@ -6,7 +6,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from twocaptcha import TwoCaptcha
 class CaptchaSolver:
-    def __init__(self):
+    def __init__(self, captcha_api_key):
+        self.client = TwoCaptcha(captcha_api_key)
         pass
 
     def solve_recaptcha(self, driver):
@@ -80,16 +81,17 @@ class CaptchaSolver:
         """Решение reCAPTCHA v3 через 2Captcha"""
         try:
             logging.info("Определена reCAPTCHA v3")
+            logging.info("Отправляем запрос на решение reCAPTCHA v3...")
 
             # Отправляем запрос на 2Captcha (важно указать action!)
-            client = TwoCaptcha(self.config['captcha_api_key'])
-            task = client.recaptcha(
+            task = self.client.recaptcha(
                 sitekey=site_key,
                 url=driver.current_url,
                 version="v3",
                 action="submit",
                 score=0.9  # Запрашиваем максимальный score
             )
+            logging.info("Ответ: " + str(task))
 
             # Вставляем токен в поле g-recaptcha-response
             driver.execute_script(f'document.getElementById("g-recaptcha-response").value = "{task["code"]}";')
@@ -104,11 +106,12 @@ class CaptchaSolver:
 
     def solve_recaptcha_v2(self, driver,site_key):
         try:
-            solver = TwoCaptcha(self.config['captcha_api_key'])
-            result = solver.recaptcha(
+            logging.info("Отправляем запрос на решение reCAPTCHA v2...")
+            result = self.client.recaptcha(
                 sitekey=site_key,
                 url=driver.current_url
             )
+            logging.info("Ответ: " + str(result))
             driver.execute_script(f'document.getElementById("g-recaptcha-response").innerHTML = "{result["code"]}";')
             return True
         except Exception as e:

@@ -41,6 +41,7 @@ def start_script():
     thread.start()
 
 
+
 def stop_script():
     submitter.stop_script()
 
@@ -196,6 +197,26 @@ def create_profile_frame(parent):
     tk.Button(frame, text="Delete", command=delete_current_profile).pack(side=tk.LEFT, padx=5)
 
     update_profile_list()
+    return frame
+
+def create_progress_frame(parent):
+    frame = tk.Toplevel(parent)
+    frame.title("Progress")
+    frame.geometry("300x150")
+
+    global progress_bar, progress_label, success_label, error_label
+    progress_bar = ttk.Progressbar(frame, orient='horizontal', mode='determinate')
+    progress_bar.pack(pady=10, padx=10, fill='x')
+
+    progress_label = tk.Label(frame, text="0 of N/A", width=20)
+    progress_label.pack(pady=5)
+
+    success_label = tk.Label(frame, text="Success: 0", width=20)
+    success_label.pack(pady=5)
+
+    error_label = tk.Label(frame, text="Errors: 0", width=20)
+    error_label.pack(pady=5)
+
     return frame
 
 

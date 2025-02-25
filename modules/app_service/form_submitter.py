@@ -12,6 +12,7 @@ from modules.site_runner import init
 
 class FormSubmitter:
     def __init__(self):
+        self.thread = None
         self.browser = None
         self.running = True
         self.ua = UserAgent()
@@ -37,7 +38,7 @@ class FormSubmitter:
         self.sheet = self.google_service.init()
         os.makedirs("screenshots", exist_ok=True)
         os.makedirs("screenshots/success", exist_ok=True)
-        os.makedirs("screenshots/errors", exist_ok=True)
+        os.makedirs("screenshots/error", exist_ok=True)
         profile_name = self.config.get("profile_name", "default")
 
         sites = get_sites.run(self.sheet)

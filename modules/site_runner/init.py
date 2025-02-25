@@ -38,7 +38,7 @@ class SiteRunner:
 
             time.sleep(5)
 
-            status_updater.run(driver, sheet, idx, processed_url, status, reason, data['phone'],email, phone)
+            status_updater.run(driver, sheet, idx, processed_url, status, reason, config['form_data']['phone'],email, phone)
         except Exception as e:
             logging.critical(f"Critical error processing {url}: {str(e)}")
         finally:

@@ -1,6 +1,8 @@
 import logging
 import re
 
+from selenium.webdriver.common.by import By
+
 
 def run(driver):
     """Поиск контактных данных на сайте"""
@@ -8,7 +10,7 @@ def run(driver):
     phone = None
     try:
         # Поиск контактов
-        contacts = driver.find_elements_by_xpath(
+        contacts = driver.find_elements(By.XPATH,
             "//a[contains(@href, 'mailto:') or contains(@href, 'tel:') or contains(@href, 'skype:')]"
         )
         for contact in contacts:
@@ -16,6 +18,9 @@ def run(driver):
                 email = contact.get_attribute("href").replace("mailto:", "")
             elif "tel:" in contact.get_attribute("href"):
                 phone = contact.get_attribute("href").replace("tel:", "")
+        # оставляем только цифры в номере
+        if phone:
+            phone = re.sub(r'\D', '', phone)
         return email, phone
     except Exception as e:
         logging.error(f"Ошибка поиска контактов: {str(e)}")
@@ -35,6 +40,8 @@ def run(driver):
             email = emails[0]
         if phones:
             phone = phones[0]
+        if phone:
+            phone = re.sub(r'\D', '', phone)
         return email, phone
     except Exception as e:
         logging.error(f"Ошибка поиска контактов через регулярное выражение: {str(e)}")

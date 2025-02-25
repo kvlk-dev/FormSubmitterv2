@@ -59,11 +59,12 @@ class SiteProcessor:
             except Exception:
                 pass
 
-            contact_link = contact_link_finder.run(self.driver)
-            if contact_link:
-                self.driver.get(contact_link)
-                time.sleep(random.uniform(0.5, 1.5))
-                logging.info(f"Найдена контактная ссылка: {contact_link}")
+            if "contact" not in self.driver.current_url:
+                contact_link = contact_link_finder.run(self.driver)
+                if contact_link:
+                    self.driver.get(contact_link)
+                    time.sleep(random.uniform(0.5, 1.5))
+                    logging.info(f"Найдена контактная ссылка: {contact_link}")
 
             form = form_finder.run(self.driver)
             if not form:
@@ -71,21 +72,13 @@ class SiteProcessor:
 
             fill_result, form = form_filler.run(self.driver, form, data['form_data'])
 
-            # Поиск основной формы
-            #    try:
-            #        form = WebDriverWait(self.driver, 25).until(
-            #            EC.presence_of_element_located((By.XPATH, "//form//input[@type='submit'] | //form//button[@type='submit']"))
-            #        )
-            #    except Exception:
-            #        return "Error","Форма не найдена"
-            # Заполнение формы
             if not fill_result:
                 return "Error", "Ошибка заполнения формы"
 
             # Обработка CAPTCHA, если есть
             if self.driver.find_elements(By.ID, "g-recaptcha-response") or self.driver.find_elements(By.CLASS_NAME,
                                                                                                      "g-recaptcha"):
-                captcha_solver = CaptchaSolver()
+                captcha_solver = CaptchaSolver(data['captcha_api_key'])
                 if not captcha_solver.solve_recaptcha(self.driver):
                     return "Error", "Ошибка CAPTCHA"
             submit_form = SubmitForm(self.driver, form, data['form_data'])
