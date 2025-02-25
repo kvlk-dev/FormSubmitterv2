@@ -9,15 +9,18 @@ from selenium.common import WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
-from modules.site_processor import site_availability, contact_link_finder, form_finder
+from main import submitter
+from modules.site_processor import site_availability, contact_link_finder, form_finder, form_filler
+from modules.site_processor.captcha_solver import CaptchaSolver
+from modules.site_processor.submit_form import SubmitForm
 
 
 class SiteProcessor:
-    def __init__(self):
+    def __init__(self, driver):
         self.running = False
-        self.driver = None
+        self.driver = driver
 
-    def init(self, url):
+    def init(self, url, data):
         """Обработка одного сайта с классификацией ошибок"""
         try:
             # Попытка открыть сайт
@@ -67,7 +70,7 @@ class SiteProcessor:
             if not form:
                 return "Error", "Форма не найдена"
 
-            fill_form = form_filler.run(self.driver, form)
+            fill_result, form = form_filler.run(self.driver, form, data['form_data'])
 
             # Поиск основной формы
             #    try:
@@ -76,8 +79,6 @@ class SiteProcessor:
             #        )
             #    except Exception:
             #        return "Error","Форма не найдена"
-            fill_result, form = self.fill_form(self.driver)
-
             # Заполнение формы
             if not fill_result:
                 return "Error", "Ошибка заполнения формы"
@@ -85,9 +86,10 @@ class SiteProcessor:
             # Обработка CAPTCHA, если есть
             if self.driver.find_elements(By.ID, "g-recaptcha-response") or self.driver.find_elements(By.CLASS_NAME,
                                                                                                      "g-recaptcha"):
-                if not self.solve_recaptcha(self.driver):
+                captcha_solver = CaptchaSolver()
+                if not captcha_solver.solve_recaptcha(self.driver):
                     return "Error", "Ошибка CAPTCHA"
-
+            submit_form = SubmitForm(self.driver, form, data['form_data'])
             return self.submit_form(self.driver, form)  # Сохраняем результаты submit_form
             #
             # if status != True:  # Проверяем статус. Если не True, значит ошибка.

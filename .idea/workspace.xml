@@ -4,26 +4,26 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="17e679f7-149f-46b9-b60b-c1de0d1bc07c" name="Changes" comment="initialize project configuration files for FormSubmitterv2">
-      <change afterPath="$PROJECT_DIR$/bot.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/browser_killer.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/google_service/add_formula.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/google_service/add_processing_status.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/google_service/get_sites.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/google_service/init.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/logger.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/site_processor/contact_link_finder.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/site_processor/form_filler.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/site_processor/form_finder.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/site_processor/init.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/site_processor/phone_formatter.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/site_processor/site_availability.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/site_runner/init.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/site_runner/screenshot_maker.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/site_runner/status_updater.py" afterDir="false" />
+    <list default="true" id="17e679f7-149f-46b9-b60b-c1de0d1bc07c" name="Changes" comment="v0.0,1">
+      <change afterPath="$PROJECT_DIR$/modules/app_service/profile_manager.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/app_service/text_handler.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/site_processor/additional_fields_handler.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/site_processor/captcha_solver.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/site_processor/phone_processor.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/modules/site_processor/submit_form.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/profiles/TEST FROM ENV.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/app_service/form_submitter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/browser_killer.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/app_service/browser_killer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/app_service/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/google_service/get_sites.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/google_service/get_sites.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/google_service/init.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/google_service/init.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/app_service/logger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/site_processor/form_filler.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/site_processor/form_filler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/site_processor/init.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/site_processor/init.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/site_processor/phone_formatter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/site_runner/init.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/site_runner/init.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,6 +39,11 @@
   </component>
   <component name="Git.Settings">
     <option name="PREVIEW_PUSH_PROTECTED_ONLY" value="true" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -59,15 +64,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.main.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "v1",
+    "last_opened_file_path": "/Users/danila/Desktop/KVLK Studio/Outsource/FormSubmitterv2"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/modules/app_service" />
       <recent name="$PROJECT_DIR$/modules/site_processor" />
       <recent name="$PROJECT_DIR$/modules/site_runner" />
       <recent name="$PROJECT_DIR$/modules/init" />
@@ -98,7 +109,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740312906664</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="v0.0,1">
+      <option name="closed" value="true" />
+      <created>1740447515960</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1740447515960</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -114,7 +133,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initialize project configuration files for FormSubmitterv2" />
-    <option name="LAST_COMMIT_MESSAGE" value="initialize project configuration files for FormSubmitterv2" />
+    <MESSAGE value="v0.0,1" />
+    <option name="LAST_COMMIT_MESSAGE" value="v0.0,1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -1,5 +1,5 @@
 import logging
-def get_sites(sheet):
+def run(sheet):
         """Получение сайтов с пустыми статусами из 2 и 3 столбцов"""
         try:
             all_data = sheet.get_all_values()

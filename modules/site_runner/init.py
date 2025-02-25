@@ -8,6 +8,7 @@ import undetected_chromedriver as uc
 from fake_useragent import UserAgent
 
 from modules.google_service import add_formula, add_processing_status
+from modules.site_processor.init import SiteProcessor
 from modules.site_runner import status_updater
 
 
@@ -17,7 +18,7 @@ class SiteRunner:
         self.chrome_options = self.chrome_options_setup()
         self.firefox_options = self.firefox_options_setup()
     
-    def site_runner(self, browser, idx, url,total,sheet):
+    def run(self, browser, idx, url,total,sheet,config):
         """Обработка сайта"""
         driver = None
         try:
@@ -29,6 +30,8 @@ class SiteRunner:
             # Обновление статуса
             add_formula.run(sheet, idx)
             add_processing_status.run(sheet, idx)
+            site_processor = SiteProcessor(driver)
+            result = site_processor.init(processed_url, config)
     
             # Основная обработка
             status, reason = self.process_site(processed_url)

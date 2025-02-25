@@ -1,13 +1,13 @@
 import logging
 
 import gspread
-from oauth2client import service_account
+from google.oauth2 import service_account
 
 class GoogleService:
     def __init__(self, config):
         self.sheet = None
         self.drive_service = None
-        self.config = config.init()
+        self.config = config
 
     def validate_config(self):
         """Проверка конфига на наличие необходимых полей"""
