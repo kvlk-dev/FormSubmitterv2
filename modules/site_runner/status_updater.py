@@ -4,7 +4,7 @@ from datetime import datetime
 from modules.site_runner import screenshot_maker
 
 
-def run(driver, sheet, row, status, reason=None, phone=None):
+def run(driver, sheet, row, processed_url, status, reason=None, phone=None):
     """Обновление статуса и добавление скриншота"""
     screenshot_url = screenshot_maker.run(driver, processed_url, status)
     try:

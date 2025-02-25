@@ -9,7 +9,6 @@ from selenium.common import WebDriverException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
-from main import submitter
 from modules.site_processor import site_availability, contact_link_finder, form_finder, form_filler
 from modules.site_processor.captcha_solver import CaptchaSolver
 from modules.site_processor.submit_form import SubmitForm
@@ -17,7 +16,7 @@ from modules.site_processor.submit_form import SubmitForm
 
 class SiteProcessor:
     def __init__(self, driver):
-        self.running = False
+        self.running = True
         self.driver = driver
 
     def init(self, url, data):
@@ -90,7 +89,8 @@ class SiteProcessor:
                 if not captcha_solver.solve_recaptcha(self.driver):
                     return "Error", "Ошибка CAPTCHA"
             submit_form = SubmitForm(self.driver, form, data['form_data'])
-            return self.submit_form(self.driver, form)  # Сохраняем результаты submit_form
+            return submit_form.run()
+
             #
             # if status != True:  # Проверяем статус. Если не True, значит ошибка.
             #     return status, None

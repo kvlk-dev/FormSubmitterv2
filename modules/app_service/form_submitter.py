@@ -13,7 +13,7 @@ from modules.site_runner import init
 class FormSubmitter:
     def __init__(self):
         self.browser = None
-        self.running = False
+        self.running = True
         self.ua = UserAgent()
         self.proxy = None
         self.captcha = None

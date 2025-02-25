@@ -2,9 +2,6 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import threading
 import logging
-import os
-import json
-
 from modules.app_service.form_submitter import FormSubmitter
 from modules.app_service.text_handler import TextHandler
 from modules.app_service.profile_manager import ProfileManager

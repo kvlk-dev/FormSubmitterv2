@@ -5,25 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="17e679f7-149f-46b9-b60b-c1de0d1bc07c" name="Changes" comment="v0.0,1">
-      <change afterPath="$PROJECT_DIR$/modules/app_service/profile_manager.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/app_service/text_handler.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/site_processor/additional_fields_handler.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/site_processor/captcha_solver.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/site_processor/phone_processor.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/modules/site_processor/submit_form.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/profiles/TEST FROM ENV.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/app_service/form_submitter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/browser_killer.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/app_service/browser_killer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/app_service/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/app_service/form_submitter.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/app_service/form_submitter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modules/google_service/get_sites.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/google_service/get_sites.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/google_service/init.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/google_service/init.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/app_service/logger.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/site_processor/form_filler.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/site_processor/form_filler.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modules/site_processor/init.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/site_processor/init.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modules/site_processor/phone_formatter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/site_processor/submit_form.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/site_processor/submit_form.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modules/site_runner/init.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/site_runner/init.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/modules/site_runner/status_updater.py" beforeDir="false" afterPath="$PROJECT_DIR$/modules/site_runner/status_updater.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,7 +55,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Python.main.executor": "Run",
+    "Python.main.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "v1",
@@ -84,6 +73,35 @@
       <recent name="$PROJECT_DIR$/modules/init" />
       <recent name="$PROJECT_DIR$/modules/google_service" />
     </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="FormSubmitterv2" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -117,7 +135,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740447515960</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="v0.0,1">
+      <option name="closed" value="true" />
+      <created>1740486207822</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1740486207822</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -135,16 +161,5 @@
     <MESSAGE value="initialize project configuration files for FormSubmitterv2" />
     <MESSAGE value="v0.0,1" />
     <option name="LAST_COMMIT_MESSAGE" value="v0.0,1" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main.py</url>
-          <line>4</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

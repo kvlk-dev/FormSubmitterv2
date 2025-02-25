@@ -1,7 +1,4 @@
 import logging
-import re
-from urllib.parse import urlparse
-from datetime import datetime
 import time
 from selenium import webdriver
 import undetected_chromedriver as uc
@@ -31,15 +28,14 @@ class SiteRunner:
             add_formula.run(sheet, idx)
             add_processing_status.run(sheet, idx)
             site_processor = SiteProcessor(driver)
-            result = site_processor.init(processed_url, config)
+            status, reason = site_processor.init(processed_url, config)
     
             # Основная обработка
-            status, reason = self.process_site(processed_url)
             logging.info(f"Status: {status}, Reason: {reason}")
             logging.info(f"Slepping for 5 seconds before taking screenshot")
 
             time.sleep(5)
-            status_updater.run(driver, sheet, idx, status, reason)
+            status_updater.run(driver, sheet, idx, processed_url, status, reason)
         except Exception as e:
             logging.critical(f"Critical error processing {url}: {str(e)}")
         finally:

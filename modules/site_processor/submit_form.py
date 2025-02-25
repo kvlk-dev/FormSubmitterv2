@@ -1,7 +1,7 @@
 import logging
 import random
 import re
-import phone_processor
+import modules.site_processor.phone_processor as phone_processor
 
 from selenium.common import TimeoutException
 from selenium.webdriver.common.by import By
@@ -60,9 +60,23 @@ class SubmitForm:
 
         return False
 
-    def submit_form(self):
+    def run(self):
         """Поиск и нажатие на кнопку отправки с улучшенной обработкой ошибок и
         попытками исправления для англоязычных контактных форм."""
+        try:
+            # ищем form input[type="submit"] или button[type="submit"] внутри self.form
+            submit_button = self.form.find_element(By.XPATH, ".//input[@type='submit'] | .//button[@type='submit]")
+            WebDriverWait(self.driver, 20).until(
+                EC.element_to_be_clickable(submit_button)
+            )
+            submit_button.click()
+            time.sleep(random.uniform(3, 5))
+            if self.is_form_successful():
+                return "Success", None
+        except TimeoutException:
+            logging.error(f"Не удалось отправить форму (timeout): возможно, проблема с сайтом.")
+            return "Error", "Timeout при отправке формы"
+
         try:
             # Уточняем локаторы кнопки отправки, добавляем специфические для
             # контактных форм варианты
