@@ -4,7 +4,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 import re
-def run(driver, initial_phone: str) -> str:
+def run(driver, initial_phone: str) -> str | tuple[str, str]:
     """
     Извлечение первых 3 цифр из номера на сайте и добавление к нашему номеру.
     Сначала ищем ссылки с "tel:". Если ссылки не найдены, сканируем HTML-код страницы

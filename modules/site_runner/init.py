@@ -5,6 +5,7 @@ import undetected_chromedriver as uc
 from fake_useragent import UserAgent
 
 from modules.google_service import add_formula, add_processing_status
+from modules.site_processor import contact_data_finder
 from modules.site_processor.init import SiteProcessor
 from modules.site_runner import status_updater
 
@@ -33,9 +34,11 @@ class SiteRunner:
             # Основная обработка
             logging.info(f"Status: {status}, Reason: {reason}")
             logging.info(f"Slepping for 5 seconds before taking screenshot")
+            email, phone = contact_data_finder.run(driver)
 
             time.sleep(5)
-            status_updater.run(driver, sheet, idx, processed_url, status, reason)
+
+            status_updater.run(driver, sheet, idx, processed_url, status, reason, data['phone'],email, phone)
         except Exception as e:
             logging.critical(f"Critical error processing {url}: {str(e)}")
         finally:

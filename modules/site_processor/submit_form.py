@@ -64,6 +64,15 @@ class SubmitForm:
         """Поиск и нажатие на кнопку отправки с улучшенной обработкой ошибок и
         попытками исправления для англоязычных контактных форм."""
         try:
+            self.form.submit()
+            time.sleep(random.uniform(3, 5))
+            if self.is_form_successful():
+                return "Success", None
+        except Exception as e:
+            logging.error(f"Ошибка при отправке формы: {str(e)}")
+            return "Error", "Не удалось отправить форму"
+        exit()
+        try:
             # ищем form input[type="submit"] или button[type="submit"] внутри self.form
             submit_button = self.form.find_element(By.XPATH, ".//input[@type='submit'] | .//button[@type='submit]")
             WebDriverWait(self.driver, 20).until(

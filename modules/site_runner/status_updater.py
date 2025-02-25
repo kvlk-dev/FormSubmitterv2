@@ -4,7 +4,7 @@ from datetime import datetime
 from modules.site_runner import screenshot_maker
 
 
-def run(driver, sheet, row, processed_url, status, reason=None, phone=None):
+def run(driver, sheet, row, processed_url, status, reason=None, phone=None, site_email=None, site_phone=None):
     """Обновление статуса и добавление скриншота"""
     screenshot_url = screenshot_maker.run(driver, processed_url, status)
     try:
@@ -18,6 +18,8 @@ def run(driver, sheet, row, processed_url, status, reason=None, phone=None):
           updates.append({"range": f"D{row}", "values": [[phone or '']]})
           updates.append({"range": f"E{row}", "values": [[screenshot_url or '']]})
           updates.append({"range": f"G{row}", "values": [[datetime.now().strftime("%Y-%m-%d %H:%M:%S")]]})
+          updates.append({"range": f"J{row}", "values": [[site_email or '']]})
+          updates.append({"range": f"I{row}", "values": [[site_phone or '']]})
 
           sheet.batch_update(updates)  # Отправка одним запросом
     except Exception as e:
