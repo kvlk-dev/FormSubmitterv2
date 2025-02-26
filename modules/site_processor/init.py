@@ -56,16 +56,22 @@ class SiteProcessor:
                 ).click()
             except Exception:
                 pass
+            #
+            # if "contact" not in self.driver.current_url:
+            #     contact_link = contact_link_finder.run(self.driver)
+            #     if contact_link:
+            #         self.driver.get(contact_link)
+            #         time.sleep(random.uniform(0.5, 1.5))
+            #         logging.info(f"Найдена контактная ссылка: {contact_link}")
 
-            if "contact" not in self.driver.current_url:
+            form = form_finder.run(self.driver)
+            if not form and "contact" not in self.driver.current_url:
                 contact_link = contact_link_finder.run(self.driver)
                 if contact_link:
                     self.driver.get(contact_link)
                     time.sleep(random.uniform(0.5, 1.5))
                     logging.info(f"Найдена контактная ссылка: {contact_link}")
 
-            form = form_finder.run(self.driver)
-            if not form:
                 return "Error", "Форма не найдена"
 
             fill_result, form = form_filler.run(self.driver, form, data['form_data'])
