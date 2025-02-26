@@ -53,9 +53,9 @@ def run(driver, form, data):
             return False
 
         # Обработка текстовых полей (input type="text")
-        text_inputs = form.find_elements(By.XPATH, ".//input[@type='text']")
+        text_inputs = form.find_elements(By.CSS_SELECTOR, "input[type='text'], input[type='email'], input[type='tel']")
         for input_field in text_inputs:
-            if is_field_required(input_field) and input_field.get_attribute('value') == '':
+            if input_field.get_attribute('value') == '':
                 try:
                     input_field.clear()
                     input_field.send_keys("soon")
@@ -63,9 +63,9 @@ def run(driver, form, data):
                     continue
 
         # Обработка числовых полей (input type="number") только если обязательные
-        number_inputs = form.find_elements(By.XPATH, ".//input[@type='number']")
+        number_inputs = form.find_elements(By.CSS_SELECTOR, "input[type='number']")
         for number_input in number_inputs:
-            if is_field_required(number_input) and number_input.get_attribute('value') == '':
+            if number_input.get_attribute('value') == '':
                 try:
                     number_input.clear()
                     if number_input.get_attribute('min') or number_input.get_attribute('max'):
@@ -78,7 +78,7 @@ def run(driver, form, data):
                         number_input.send_keys("11111")
                 except Exception:
                     continue
-        tel_inputs = form.find_elements(By.XPATH, ".//input[@type='tel']")
+        tel_inputs = form.find_elements(By.CSS_SELECTOR, "input[type='tel']")
         for tel_input in tel_inputs:
             if is_field_required(tel_input) and tel_input.get_attribute('value') == '':
                 try:
