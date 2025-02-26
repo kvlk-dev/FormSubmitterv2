@@ -1,12 +1,10 @@
 import logging
-from urllib.parse import urlparse
-
-import requests
-
-import logging
 import requests
 from urllib3.util.retry import Retry
+import urllib3
 from requests.adapters import HTTPAdapter
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 
 
 def check_http_status(url):

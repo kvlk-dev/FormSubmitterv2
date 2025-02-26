@@ -21,6 +21,8 @@ def run(driver, form, data):
             except Exception:
                 continue
 
+
+
         # Обработка radio
         radio_buttons = form.find_elements(By.XPATH, ".//input[@type='radio']")
         if radio_buttons:

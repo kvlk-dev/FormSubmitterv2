@@ -6,7 +6,7 @@ def run(sheet):
             return [
                 (row_idx + 2, row[0].strip())  # +2: заголовок + нумерация с 1
                 for row_idx, row in enumerate(all_data[1:])  # Пропускаем заголовок
-                if len(row) > 2 and row[0].strip() and (not row[1].strip() or row[1].strip() != "Success")
+                if len(row) > 2 and row[0].strip() and (not row[1].strip() or row[1].strip() != "Success" and row[1].strip() != "Error")
             ]
         except Exception as e:
             logging.error(f"Ошибка получения сайтов: {str(e)}")

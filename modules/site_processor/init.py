@@ -71,7 +71,9 @@ class SiteProcessor:
                     self.driver.get(contact_link)
                     time.sleep(random.uniform(0.5, 1.5))
                     logging.info(f"Найдена контактная ссылка: {contact_link}")
+                    form = form_finder.run(self.driver)
 
+            if not form:
                 return "Error", "Форма не найдена"
 
             fill_result, form = form_filler.run(self.driver, form, data['form_data'])

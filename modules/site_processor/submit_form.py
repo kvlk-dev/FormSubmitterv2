@@ -63,28 +63,53 @@ class SubmitForm:
     def run(self):
         """Поиск и нажатие на кнопку отправки с улучшенной обработкой ошибок и
         попытками исправления для англоязычных контактных форм."""
+        submitted = False
         try:
             self.form.submit()
             time.sleep(random.uniform(3, 5))
             if self.is_form_successful():
-                return "Success", None
+                submitted = True
         except Exception as e:
             logging.error(f"Ошибка при отправке формы: {str(e)}")
-            pass
+            submitted = False
+            try:
+                self.driver.execute_script("arguments[0].querySelector('button').click();", self.form)
+                time.sleep(random.uniform(3, 5))
+                if self.is_form_successful():
+                    submitted = True
+            except Exception as e:
+                logging.error(f"Ошибка при отправке формы: {str(e)}")
+                submitted = False
+                pass
+
+        if submitted:
+            return "Success", None
         try:
             # ищем form input[type="submit"] или button[type="submit"] внутри self.form
-            submit_button = self.form.find_element(By.XPATH, ".//input[@type='submit'] | .//button[@type='submit]")
+            submit_button = self.form.find_element(By.CSS_SELECTOR, "input[type='submit'], button")
             WebDriverWait(self.driver, 20).until(
-                EC.element_to_be_clickable(submit_button)
+                EC.presence_of_element_located(submit_button)
             )
-            submit_button.click()
+            self.driver.execute_script("window.scrollTo(0, arguments[0].getBoundingClientRect().top)", submit_button)
+            try:
+                submit_button.click()
+            except Exception as e:
+                logging.error(f"Ошибка при клике на кнопку отправки: {str(e)}")
+                try:
+                    self.driver.execute_script("arguments[0].click();", submit_button)
+                except Exception as e:
+                    logging.error(f"Ошибка при клике на кнопку отправки: {str(e)}")
+                    pass
             time.sleep(random.uniform(3, 5))
             if self.is_form_successful():
-                return "Success", None
+                submitted = True
         except TimeoutException:
             logging.error(f"Не удалось отправить форму (timeout): возможно, проблема с сайтом.")
             pass
             #return "Error", "Timeout при отправке формы"
+
+        if submitted:
+            return "Success", None
 
         try:
             # Уточняем локаторы кнопки отправки, добавляем специфические для
