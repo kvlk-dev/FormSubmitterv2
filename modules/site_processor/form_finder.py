@@ -1,41 +1,38 @@
 import logging
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.common.exceptions import TimeoutException
+
+
 def run(driver):
-    """Поиск формы на странице"""
+    """Поиск видимой и кликабельной формы на странице"""
     try:
-        form_xpaths = [
-            "//form",
-            "//form//input[@type='submit'] | //form//button[@type='submit']",
-            "//div[@role='form' or contains(@class, 'form') or contains(@class, 'contact') or contains(@data-form, 'true')]",
-            "//div[descendant::input or descendant::textarea or descendant::select]",
-            "//div[(descendant::input or descendant::textarea) and descendant::(button or input[@type='submit'])]",
+        # Оптимизированные XPath-селекторы
+        form_selectors = [
+            # Приоритетные селекторы
+            "//form[.//input|.//textarea|.//select]",  # Форма с элементами ввода
+            "//form[@role='form']",  # Явное указание роли
+
+            # Дополнительные селекторы
+            "//div[@role='form'][.//input|.//textarea]",  # Div с ролью формы
+            "//div[contains(@class, 'form') and (.//input or .//textarea)]",  # Класс + элементы
+            "//div[contains(@data-form, 'true')][.//button[@type='submit']]"  # data-атрибут
         ]
 
-        form = None
-
-        for xpath in form_xpaths:
-            try:
-                form = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.XPATH, xpath))
-                )
-                if form:
-                    break
-            except TimeoutException:
-                continue
-
-        if not form:
-            try:
-                form = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.TAG_NAME, "form"))
-                )
-            except TimeoutException:
-                return None
+        # Ищем все возможные формы за общий таймаут
+        form = WebDriverWait(driver, 15).until(
+            EC.any_of(
+                *[EC.visibility_of_element_located((By.XPATH, xpath))
+                  for xpath in form_selectors]
+            )
+        )
+        logging.info(f"Форма найдена: {form.tag_name}")
         return form
-    except Exception as e:
-        logging.error(f"Ошибка при поиске формы: {e}")
-        return None
 
+    except TimeoutException:
+        logging.warning("Форма не найдена в течение 15 секунд")
+        return None
+    except Exception as e:
+        logging.error(f"Критическая ошибка при поиске формы: {str(e)}", exc_info=True)
+        return None

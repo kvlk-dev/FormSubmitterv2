@@ -21,6 +21,9 @@ class SiteProcessor:
 
     def init(self, url, data):
         """Обработка одного сайта с классификацией ошибок"""
+        site_available = site_availability.check_http_status(url)
+        if not site_available:
+            return "Error", "Сайт недоступен"
         try:
             # Попытка открыть сайт
             self.driver.get(url)
@@ -38,11 +41,6 @@ class SiteProcessor:
             logging.error(f"Ошибка загрузки сайта: {str(e)}")
             return "Error", "Сайт недоступен"
 
-        if "The Chromium Authors" in self.driver.page_source or "Mozilla Public - License" in self.driver.page_source:
-            return "Error", "Сайт недоступен"
-
-        if "You have been blocked" in self.driver.page_source:
-            return "Error", "Cloudflare"
         site_available = site_availability.run(self.driver)
 
         if not site_available:

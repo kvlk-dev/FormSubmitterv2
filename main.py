@@ -1,8 +1,11 @@
 import tkinter as tk
+from tabnanny import check
+from threading import current_thread
 from tkinter import ttk, messagebox
 import threading
 import logging
 from modules.app_service.form_submitter import FormSubmitter
+from modules.app_service.progress_window import ProgressWindow
 from modules.app_service.text_handler import TextHandler
 from modules.app_service.profile_manager import ProfileManager
 
@@ -16,6 +19,11 @@ logging.basicConfig(
 submitter = FormSubmitter()
 
 def start_script():
+    global progress_window, current_thread
+    start_button.config(text="Running...", state=tk.DISABLED)
+    stop_button.config(state=tk.NORMAL)
+    root.update()
+    progress_window = ProgressWindow(root)
     config = {
         'google_credentials': 'credentials.json',
         'spreadsheet_name': spreadsheet_entry.get(),
@@ -36,14 +44,33 @@ def start_script():
 
     submitter.update_config(config)
     submitter.browser = browser_choice.get()
+    submitter.set_progress_window(progress_window)
+    submitter.stop_button = stop_button
+    submitter.start_button = start_button
 
-    thread = threading.Thread(target=submitter.run_script)
-    thread.start()
+    current_thread = threading.Thread(target=submitter.run_script)
+    current_thread.start()
+
+    check_thread_status()
+
+def check_thread_status():
+    if current_thread.is_alive():
+        root.after(1000, check_thread_status)
+    else:
+        stop_script()
 
 
 
 def stop_script():
+    start_button['state'] = tk.NORMAL
+
+    stop_button['state'] = tk.DISABLED
+
     submitter.stop_script()
+#    if progress_window and progress_window.winfo_exists():
+#        progress_window.destroy()
+
+    root.update()
 
 
 def save_current_profile():
@@ -221,7 +248,7 @@ def create_progress_frame(parent):
 
 
 def main():
-    global browser_choice
+    global start_button, stop_button, root, browser_choice
     root = tk.Tk()
     root.title("Form Submitter v2.0.0")
 
@@ -240,22 +267,10 @@ def main():
     # Control buttons
     btn_frame = tk.Frame(root)
     btn_frame.pack(pady=5)
-    tk.Button(btn_frame, text="Start", width=15, command=start_script).pack(side=tk.LEFT, padx=5)
-    tk.Button(btn_frame, text="Stop", width=15, command=stop_script).pack(side=tk.LEFT, padx=5)
-
-    # Logging area
-    log_frame = tk.Frame(root)
-    log_frame.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
-    text_area = tk.Text(log_frame, height=15, width=80)
-    scrollbar = tk.Scrollbar(log_frame, command=text_area.yview)
-    text_area.config(yscrollcommand=scrollbar.set)
-    text_area.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-    handler = TextHandler(text_area)
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-    handler.setFormatter(formatter)
-    logging.getLogger().addHandler(handler)
+    start_button = tk.Button(btn_frame, text="Start", width=15, command=start_script)
+    start_button.pack(side=tk.LEFT, padx=5)
+    stop_button = tk.Button(btn_frame, text="Stop", width=15, command=stop_script, state=tk.DISABLED)
+    stop_button.pack(side=tk.LEFT, padx=5)
 
     root.mainloop()
 
