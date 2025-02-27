@@ -132,7 +132,6 @@ def run(driver, form, data,filled_elements):
         text_areas = form.find_elements(By.CSS_SELECTOR, "textarea")
         keywords = ['message', 'comment', 'feedback', 'question', 'text', 'note', 'description','messege']
         for text_area in text_areas:
-                print("Found text area: ", text_area.get_attribute('name'))
           #  if text_area.get_attribute('value') == '':
                 try:
                     if any(keyword in text_area.get_attribute('placeholder').lower() for keyword in keywords) or any(keyword in text_area.get_attribute('aria-label').lower() for keyword in keywords) or any(keyword in text_area.get_attribute('name').lower() for keyword in keywords) or any(keyword in text_area.get_attribute('id').lower() for keyword in keywords) or any(keyword in text_area.get_attribute('class').lower() for keyword in keywords):

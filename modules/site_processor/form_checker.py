@@ -17,15 +17,14 @@ class FormChecker:
         try:
             # Ожидаем изменения состояния формы
             WebDriverWait(self.driver, self.timeout).until(
-                EC.staleness_of(self.form)
+                lambda driver: self._form_state_changed(driver)
             )
             return True
 
         except TimeoutException:
             try:
-                if self.form.is_displayed():
-                    return False
-                return True
+
+                return self._check_success_conditions()
             except (StaleElementReferenceException, NoSuchElementException):
                 return True
 

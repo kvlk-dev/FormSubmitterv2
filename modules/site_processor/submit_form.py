@@ -1,9 +1,14 @@
 import logging
 import random
+from argparse import Action
+
+from selenium.common import ElementNotInteractableException
+from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
@@ -26,13 +31,28 @@ class SubmitForm:
         submitted = False
         form_checker = FormChecker(self.driver, self.form)
         try:
-            self.form.find_element(By.CSS_SELECTOR, 'input[type="text"], input[type="email"], input[type="tel"], textarea').send_keys(Keys.ENTER)
+            logging.info("Нажимаем Enter и отправляем")
+            inputs = self.form.find_elements(By.CSS_SELECTOR, 'input[type="text"], input[type="email"], input[type="tel"], textarea')
+            actions = ActionChains(self.driver)
+            for input in inputs:
+                try:
+                    if input.is_displayed() and input.is_enabled():
+                        logging.info(f"Пробуем отправить форму, нажав Enter на поле {input.get_attribute('id') or input.get_attribute('name') or input.get_attribute('class')}")
+                        actions.move_to_element(input).click().send_keys(Keys.ENTER).perform()
+                        actions.reset_actions()
+                        time.sleep(random.uniform(0.5, 1.5))
+                        break
+                except ElementNotInteractableException:
+                    logging.error(f"Поле {input.get_attribute('id')} не доступно для ввода, пробуем следующее")
+                    pass
+                except Exception as e:
+                    logging.error(f"Ошибка при нажатии Enter: {str(e)}")
+                    pass
             time.sleep(random.uniform(3, 5))
             if form_checker.is_form_successful():
                 return "Success", None
             else:
-                print("Error")
-            # else:
+                return "Error", "Ошибка при отправке формы"
             #     errors_detector = ErrorsDetector(self.driver, self.form, self.data)
             #     status = errors_detector.run()
             #     if status:

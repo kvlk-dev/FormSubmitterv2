@@ -75,7 +75,7 @@ class FormSubmitter:
                     break
                 # Вместо прямого вызова методов окна
                 site_runner = init.SiteRunner()
-                site_runner.run(self.browser, idx, url, total, self.sheet,self.config)
+                site_runner.run(self.browser, idx, url, total, self.sheet,self.config,(count +1))
                 count += 1
                 self.progress_window.queue.put(("progress", count))
 

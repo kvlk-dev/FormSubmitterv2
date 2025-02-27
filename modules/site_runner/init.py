@@ -17,14 +17,14 @@ class SiteRunner:
         self.chrome_options = self.chrome_options_setup()
         self.firefox_options = self.firefox_options_setup()
     
-    def run(self, browser, idx, url,total,sheet,config):
+    def run(self, browser, idx, url,total,sheet,config,count):
         """Обработка сайта"""
         driver = None
         try:
             driver = self.browser_setup(browser)
             # Обработка URL
             processed_url = f'https://{url}' if not url.startswith('http') else url
-            logging.info(f"Processing {idx - 1}/{total}: {processed_url}")
+            logging.info(f"Processing {count}/{total}: {processed_url}")
     
             # Обновление статуса
             add_formula.run(sheet, idx)

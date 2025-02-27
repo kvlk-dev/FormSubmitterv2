@@ -68,9 +68,10 @@ def run(driver, form, data):
                 time.sleep(random.uniform(0.2, 0.5))
 
             except (WebDriverException, TimeoutException) as e:
-                logging.warning(f"Alternative fill method for {element.get_attribute('id')}")
-                element.clear()
-                element.send_keys(value)
+                if element.is_displayed() and element.is_enabled():
+                    logging.warning(f"Alternative fill method for {element.get_attribute('id')}")
+                    element.clear()
+                    element.send_keys(value)
         # for element in form.find_elements(By.XPATH, ".//input[not(@type='hidden')]"):
         #     for attr in ['id', 'name', 'placeholder', 'aria-label']:
         #         value = (element.get_attribute(attr) or '').strip().lower()
@@ -85,10 +86,10 @@ def run(driver, form, data):
 
         for textarea in form.find_elements(By.TAG_NAME, 'textarea'):
             t_fill = False
-            print("Found textarea: ", textarea)
+
             for attr in ['id', 'name', 'placeholder','aria-label']:
                 value = (textarea.get_attribute(attr) or '').strip().lower()
-                if value and fields_mapping['message'].match(value):
+                if value and ("message" in value or "comment" in value or "feedback" in value or "text" in value or "description" in value or "reason" in value or "details" in value or "inquiry" in value):
                     fill_element(textarea, data['message'])
                     t_fill = True
                     break
@@ -124,7 +125,8 @@ def run(driver, form, data):
                 labels = form.find_elements(By.XPATH, ".//label")
                 for label in labels:
                     for fields_mapping_key, regex in fields_mapping.items():
-                        if regex.search(label.text or ''):
+                        label_text = label.text.lower().replace('*', '').strip()
+                        if regex.search(label_text or ''):
                             input_id = label.get_attribute("for")
                             element = form.find_element(By.ID, input_id) if input_id else label.find_element(By.XPATH, ".//input | .//textarea")
                             if element:

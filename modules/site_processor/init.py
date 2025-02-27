@@ -111,7 +111,8 @@ class SiteProcessor:
 
         try:
             submit_form = SubmitForm(self.driver, form, data['form_data'])
-            return submit_form.run()
+            status, reason = submit_form.run()
+            return status, reason
         except (NoSuchElementException, StaleElementReferenceException) as e:
             # Если элемент исчез, значит форма отправлена
             if "stale element not found" in str(e).lower():
