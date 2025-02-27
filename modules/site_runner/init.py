@@ -30,6 +30,7 @@ class SiteRunner:
             add_formula.run(sheet, idx)
             add_processing_status.run(sheet, idx)
             site_processor = SiteProcessor(driver)
+            site_processor.phone = config['form_data']['phone']
             try:
                 status, reason = site_processor.init(processed_url, config)
             except Exception as e:
@@ -47,7 +48,7 @@ class SiteRunner:
                 email, phone = contact_data_finder.run(driver)
                 time.sleep(5)
 
-            status_updater.run(driver, sheet, idx, processed_url, status, reason, config['form_data']['phone'],email, phone)
+            status_updater.run(driver, sheet, idx, processed_url, status, reason, site_processor.phone,email, phone)
 
         except Exception as e:
             logging.critical(f"Critical error processing {url}: {str(e)}")

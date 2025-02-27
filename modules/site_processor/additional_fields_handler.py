@@ -1,94 +1,112 @@
 import random
 import time
 import logging
+from selenium.webdriver import ActionChains, Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common import WebDriverException, TimeoutException
 
 from modules.site_processor import phone_processor
 
 
 def run(driver, form, data):
-    """Обработка select, radio, checkbox, текстовых и числовых полей (только обязательных)"""
+    """Обработка полей с использованием ActionChains"""
     try:
-        # Обработка select
+        actions = ActionChains(driver)
+
+        def human_click(element):
+            """Имитирует человеческий клик"""
+            try:
+                actions.reset_actions()
+                driver.execute_script("arguments[0].scrollIntoViewIfNeeded(true);", element)
+                WebDriverWait(driver, 3).until(EC.element_to_be_clickable(element))
+                actions.move_to_element(element).pause(random.uniform(0.1, 0.3)).click().perform()
+            except Exception:
+                element.click()
+
+        def human_type(element, text):
+            """Имитирует человеческий ввод текста"""
+            try:
+                actions.reset_actions()
+                driver.execute_script("arguments[0].scrollIntoViewIfNeeded(true);", element)
+                WebDriverWait(driver, 3).until(EC.element_to_be_clickable(element))
+
+                # Очистка поля
+                actions.move_to_element(element).click().key_down(Keys.CONTROL).send_keys('a').key_up(Keys.CONTROL).send_keys(Keys.BACKSPACE).perform()
+                actions.send_keys(Keys.BACKSPACE)
+                # Переход в начало строки нажатием клавиши Home
+                actions.move_to_element(element).click().key_down(Keys.HOME).perform()
+                # Ввод текста
+                actions.send_keys_to_element(element, text)
+                actions.pause(random.uniform(0.05, 0.2))
+                actions.perform()
+            except Exception as e:
+                element.clear()
+                element.send_keys(text)
+
+        # Обработка select с улучшенной имитацией
         select_fields = form.find_elements(By.TAG_NAME, 'select')
         for select in select_fields:
             try:
-                select = Select(select)
-                options_count = len(select.options)
-                if options_count > 1:
-                    select.select_by_index(random.randint(1, options_count - 1))
+                human_click(select)
+                options = select.find_elements(By.TAG_NAME, 'option')
+                if len(options) > 1:
+                    option = options[random.randint(1, len(options) - 1)]
+                    human_click(option)
                 else:
-                    select.select_by_index(0)
-
+                    human_click(options[0])
+                time.sleep(0.3)
             except Exception:
                 continue
 
-
-
-        # Обработка radio
+        # Обработка radio с паузами
         radio_buttons = form.find_elements(By.CSS_SELECTOR, "input[type='radio']")
         if radio_buttons:
-            random.choice(radio_buttons).click()
+            human_click(random.choice(radio_buttons))
 
-
-        # Обработка checkbox
+        # Чекбоксы с рандомным выбором
         checkboxes = form.find_elements(By.XPATH, ".//input[@type='checkbox']")
         for checkbox in checkboxes:
             try:
                 if random.choice([True, False]):
-                    checkbox.click()
+                    human_click(checkbox)
+                    time.sleep(random.uniform(0.1, 0.4))
             except Exception:
                 continue
 
-        # Локальная функция для определения обязательности поля
-        def is_field_required(input_field):
-            """Проверяет, обязательно ли поле для заполнения"""
-            if input_field.get_attribute("required") is not None:
-                return True
-            input_id = input_field.get_attribute("id")
-            if input_id:
-                try:
-                    label = input_field.find_element(By.XPATH, f"//label[@for='{input_id}']")
-                    if label.text.strip().endswith("*"):
-                        return True
-                except Exception:
-                    pass
-            return False
-
-        # Обработка текстовых полей (input type="text")
-        text_inputs = form.find_elements(By.CSS_SELECTOR, "input[type='text'], input[type='email'], input[type='tel']")
+        # Обработка текстовых полей
+        text_inputs = form.find_elements(By.CSS_SELECTOR,
+                                         "input[type='text'], input[type='email'], input[type='tel']")
         for input_field in text_inputs:
             if input_field.get_attribute('value') == '':
                 try:
-                    input_field.clear()
-                    input_field.send_keys("soon")
+                    human_type(input_field, "soon")
                 except Exception:
                     continue
 
-        # Обработка числовых полей (input type="number") только если обязательные
+        # Числовые поля с улучшенным вводом
         number_inputs = form.find_elements(By.CSS_SELECTOR, "input[type='number']")
         for number_input in number_inputs:
             if number_input.get_attribute('value') == '':
                 try:
-                    number_input.clear()
+                    value = "11111"
                     if number_input.get_attribute('min') or number_input.get_attribute('max'):
-                        min = (int(number_input.get_attribute('min')) if number_input.get_attribute('min') else 0)
-                        max = (int(number_input.get_attribute('max')) if number_input.get_attribute('max') else 100)
-                        number_input.send_keys(
-                            str(random.randint(min, max))
-                        )
-                    else:
-                        number_input.send_keys("11111")
-
+                        min_val = int(number_input.get_attribute('min')) if number_input.get_attribute('min') else 0
+                        max_val = int(number_input.get_attribute('max')) if number_input.get_attribute('max') else 100
+                        value = str(random.randint(min_val, max_val))
+                    human_type(number_input, value)
                 except Exception:
                     continue
+
+        # Телефонные поля с расширенной обработкой
         tel_inputs = form.find_elements(By.CSS_SELECTOR, "input[type='tel']")
         for tel_input in tel_inputs:
             if tel_input.get_attribute('value') == '':
                 try:
-                    tel_input.clear()
-                    tel_input.send_keys(phone_processor.run(driver,data['phone']))
+                    phone = phone_processor.run(driver, data['phone'])
+                    human_type(tel_input, phone)
                 except Exception:
                     continue
 

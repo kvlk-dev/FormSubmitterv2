@@ -9,7 +9,7 @@ from selenium.common import WebDriverException, StaleElementReferenceException, 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
-from modules.site_processor import site_availability, contact_link_finder, form_finder, form_filler
+from modules.site_processor import site_availability, contact_link_finder, form_finder, form_filler, phone_processor
 from modules.site_processor.captcha_solver import CaptchaSolver
 from modules.site_processor.submit_form import SubmitForm
 
@@ -18,6 +18,7 @@ class SiteProcessor:
     def __init__(self, driver):
         self.running = True
         self.driver = driver
+        self.phone = None
 
     def init(self, url, data):
         """Обработка одного сайта с классификацией ошибок"""
@@ -85,6 +86,8 @@ class SiteProcessor:
                     pass
         if not form:
             return "Error", "Форма не найдена"
+
+        self.phone = data['form_data']['phone'] = phone_processor.run(self.driver, self.phone)
 
         try:
             fill_result, form = form_filler.run(self.driver, form, data['form_data'])

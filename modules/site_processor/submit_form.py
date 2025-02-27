@@ -14,7 +14,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import time
 import traceback
 
-from modules.site_processor.form__checker import FormChecker
+from modules.site_processor.form_checker import FormChecker
 
 
 class SubmitForm:
