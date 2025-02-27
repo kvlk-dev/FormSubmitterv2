@@ -18,7 +18,7 @@ class CaptchaSolver:
             site_key = None
             try:
                 site_key = WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, "g-recaptcha"))
+                    EC.presence_of_element_located((By.CSS_SELECTOR, "div[class*='g-recaptcha']"))
                 ).get_attribute("data-sitekey")
             except Exception:
                 pass
@@ -51,6 +51,14 @@ class CaptchaSolver:
 
     def get_recaptcha_version(self, driver):
         """Определяет версию reCAPTCHA на странице"""
+        try:
+            # ищем div с частью класса g-recaptcha
+            recaptcha_div = driver.find_element(By.CSS_SELECTOR, "div[class*='g-recaptcha']")
+            if recaptcha_div and recaptcha_div.get_attribute("data-version"):
+                return recaptcha_div.get_attribute("data-version")
+        except Exception:
+            pass
+
         try:
             # Ищем все iframe
             recaptcha_iframes = driver.find_elements(By.TAG_NAME, "iframe")

@@ -9,7 +9,7 @@ from modules.google_service import add_formula, add_processing_status
 from modules.site_processor import contact_data_finder
 from modules.site_processor.init import SiteProcessor
 from modules.site_runner import status_updater
-
+import traceback
 
 class SiteRunner:
     def __init__(self):
@@ -35,10 +35,13 @@ class SiteRunner:
                 status, reason = site_processor.init(processed_url, config)
             except Exception as e:
                 logging.error(f"Ошибка при обработке сайта: {str(e)}")
+                logging.error(f"Traceback: {traceback.format_exc()}")
                 status, reason = "Error", "Ошибка обработки"
             except (NoSuchElementException, StaleElementReferenceException) as e:
                 logging.error(f"Ошибка при поиске элемента: {str(e)}")
+                logging.error(f"Traceback: {traceback.format_exc()}")
                 status, reason = "Error", "Ошибка поиска элемента"
+
     
             # Основная обработка
             logging.info(f"Status: {status}, Reason: {reason}")
@@ -46,12 +49,13 @@ class SiteRunner:
             email, phone = None, None
             if reason != "Сайт недоступен":
                 email, phone = contact_data_finder.run(driver)
-                time.sleep(5)
+                # time.sleep(5)
 
             status_updater.run(driver, sheet, idx, processed_url, status, reason, site_processor.phone,email, phone)
 
         except Exception as e:
             logging.critical(f"Critical error processing {url}: {str(e)}")
+            logging.error(f"Traceback: {traceback.format_exc()}")
         finally:
             # Закрытие драйвера после обработки каждого сайта
             if driver:
@@ -80,6 +84,8 @@ class SiteRunner:
         chrome_options.add_argument("--disable-mobile-emulation")
         chrome_options.add_argument("--window-size=1920,1080")
         chrome_options.add_argument("--force-device-scale-factor=1")
+        # incognito mode
+        chrome_options.add_argument("--incognito")
         return chrome_options
 
     def firefox_options_setup(self):
@@ -88,4 +94,6 @@ class SiteRunner:
         firefox_options.set_preference("general.useragent.override", UserAgent().firefox)
         firefox_options.add_argument("--start-maximized")
         firefox_options.add_argument("--window-size=1920,1080")
+        # incognito mode
+        firefox_options.add_argument("-private")
         return firefox_options

@@ -23,10 +23,11 @@ class FormChecker:
 
         except TimeoutException:
             try:
-                # Проверка состояния формы
-                return self._check_success_conditions()
+                if self.form.is_displayed():
+                    return False
+                return True
             except (StaleElementReferenceException, NoSuchElementException):
-                return False
+                return True
 
     def _form_state_changed(self, driver):
         """Проверка изменения состояния формы"""
