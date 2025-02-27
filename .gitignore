@@ -4,3 +4,6 @@
 /.env
 /profiles
 /.idea
+/__pycache__
+/build
+/dist

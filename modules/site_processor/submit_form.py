@@ -1,13 +1,22 @@
 import logging
 import random
 import re
+
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.select import Select
+
 import modules.site_processor.phone_processor as phone_processor
 
-from selenium.common import TimeoutException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
+import traceback
+
+from modules.site_processor.form__checker import FormChecker
+
+
 class SubmitForm:
     def __init__(self, driver, form, data):
         self.driver = driver
@@ -15,59 +24,26 @@ class SubmitForm:
         self.form = form
         self.initial_phone = data['phone']
 
-
-
-    def is_form_successful(self):
-        # Ключевые слова для проверки URL
-        success_keywords = ["success", "thank", "confirm", "done", "completed", "submitted", "finished"]
-
-        # Проверка URL
-        if any(keyword in self.driver.current_url for keyword in success_keywords):
-            return True
-
-        # Проверка исчезновения формы
-        try:
-            WebDriverWait(self.driver, 10).until_not(
-                EC.invisibility_of_element(self.form)
-            )
-            return True
-        except TimeoutException:
-            pass
-
-        # 1. Проверка успешной отправки
-        try:
-            success_message = WebDriverWait(self.driver, 15).until(
-                EC.presence_of_element_located((
-                    By.XPATH,
-                    "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'thanks') or "
-                    "contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'thank you') or "
-                    "contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'sent') or "
-                    "contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'success')]"
-                ))
-            )
-            if success_message.is_displayed():
-                return True
-        except TimeoutException:
-            pass  # Сообщение об успехе не найдено
-
-        # Проверка появления сообщения об успехе
-        try:
-            success_message = self.driver.find_element(By.CSS_SELECTOR, ".success-message")
-            if success_message.is_displayed():
-                return True
-        except:
-            pass
-
-        return False
-
     def run(self):
         """Поиск и нажатие на кнопку отправки с улучшенной обработкой ошибок и
         попытками исправления для англоязычных контактных форм."""
         submitted = False
+        form_checker = FormChecker(self.driver, self.form)
+        try:
+            self.form.find_element(By.CSS_SELECTOR, 'input[type="text"], input[type="email"], input[type="tel"], textarea').send_keys(Keys.ENTER)
+            time.sleep(random.uniform(3, 5))
+            if form_checker.is_form_successful():
+                return "Success", None
+
+        except Exception as e:
+            logging.error(f"Ошибка при отправке формы: {str(e)}")
+            logging.error(traceback.format_exc())
+            submitted = False
+            pass
         try:
             self.form.submit()
             time.sleep(random.uniform(3, 5))
-            if self.is_form_successful():
+            if form_checker.is_form_successful():
                 submitted = True
         except Exception as e:
             logging.error(f"Ошибка при отправке формы: {str(e)}")
@@ -75,10 +51,11 @@ class SubmitForm:
             try:
                 self.driver.execute_script("arguments[0].querySelector('button').click();", self.form)
                 time.sleep(random.uniform(3, 5))
-                if self.is_form_successful():
+                if form_checker.is_form_successful():
                     submitted = True
             except Exception as e:
                 logging.error(f"Ошибка при отправке формы: {str(e)}")
+                logging.error(traceback.format_exc())
                 submitted = False
                 pass
 
@@ -101,7 +78,7 @@ class SubmitForm:
                     logging.error(f"Ошибка при клике на кнопку отправки: {str(e)}")
                     pass
             time.sleep(random.uniform(3, 5))
-            if self.is_form_successful():
+            if form_checker.is_form_successful():
                 submitted = True
         except TimeoutException:
             logging.error(f"Не удалось отправить форму (timeout): возможно, проблема с сайтом.")
@@ -157,10 +134,10 @@ class SubmitForm:
             if submit_button:
                 submit_button.click()
                 time.sleep(random.uniform(3, 5))
-                if self.is_form_successful():
+                if form_checker.is_form_successful():
                     return "Success", None
             else:
-                return "Error: Ошибка отправки формы", None, None
+                return "Error","Ошибка отправки формы"
 
           #  driver.execute_script("arguments[0].click();", submit_button)
            # time.sleep(random.uniform(3, 5))
@@ -254,7 +231,7 @@ class SubmitForm:
                         logging.error(f"Ошибка при поиске ошибки: {e}")
                         pass
 
-            if self.is_form_successful():
+            if form_checker.is_form_successful():
                 return "Success", ""
 
             # 2. Общий поиск ошибок (менее приоритетно, если конкретные не найдены):

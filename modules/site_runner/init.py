@@ -3,6 +3,7 @@ import time
 from selenium import webdriver
 import undetected_chromedriver as uc
 from fake_useragent import UserAgent
+from selenium.common import NoSuchElementException, StaleElementReferenceException
 
 from modules.google_service import add_formula, add_processing_status
 from modules.site_processor import contact_data_finder
@@ -29,7 +30,14 @@ class SiteRunner:
             add_formula.run(sheet, idx)
             add_processing_status.run(sheet, idx)
             site_processor = SiteProcessor(driver)
-            status, reason = site_processor.init(processed_url, config)
+            try:
+                status, reason = site_processor.init(processed_url, config)
+            except Exception as e:
+                logging.error(f"Ошибка при обработке сайта: {str(e)}")
+                status, reason = "Error", "Ошибка обработки"
+            except (NoSuchElementException, StaleElementReferenceException) as e:
+                logging.error(f"Ошибка при поиске элемента: {str(e)}")
+                status, reason = "Error", "Ошибка поиска элемента"
     
             # Основная обработка
             logging.info(f"Status: {status}, Reason: {reason}")
@@ -40,6 +48,7 @@ class SiteRunner:
                 time.sleep(5)
 
             status_updater.run(driver, sheet, idx, processed_url, status, reason, config['form_data']['phone'],email, phone)
+
         except Exception as e:
             logging.critical(f"Critical error processing {url}: {str(e)}")
         finally:

@@ -91,8 +91,7 @@ class CaptchaSolver:
                 action="submit",
                 score=0.9  # Запрашиваем максимальный score
             )
-            logging.info("Ответ: " + str(task))
-
+            logging.info("Получен токен")
             # Вставляем токен в поле g-recaptcha-response
             driver.execute_script(f'document.getElementById("g-recaptcha-response").value = "{task["code"]}";')
 
@@ -111,7 +110,7 @@ class CaptchaSolver:
                 sitekey=site_key,
                 url=driver.current_url
             )
-            logging.info("Ответ: " + str(result))
+            logging.info("Получен токен")
             driver.execute_script(f'document.getElementById("g-recaptcha-response").innerHTML = "{result["code"]}";')
             return True
         except Exception as e:

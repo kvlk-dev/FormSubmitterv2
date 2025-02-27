@@ -25,6 +25,7 @@ def run(driver, form, data):
         }
 
         def fill_element(element, value):
+            global filled_elements
             try:
                 element.clear()
                 #element.value = ''
@@ -82,7 +83,6 @@ def run(driver, form, data):
                             fill_element(element, element_value)
                             element_filled = True
                             break
-
 
         additional_fields_handler.run(driver, form, data)
         return True, form

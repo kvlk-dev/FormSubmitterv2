@@ -2,6 +2,7 @@ import random
 import time
 import logging
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.select import Select
 
 from modules.site_processor import phone_processor
 
@@ -13,20 +14,23 @@ def run(driver, form, data):
         select_fields = form.find_elements(By.TAG_NAME, 'select')
         for select in select_fields:
             try:
-                options = select.find_elements(By.TAG_NAME, 'option')
-                if options:
-                    select.click()
-                    time.sleep(random.uniform(0.3, 0.7))
-                    random.choice(options).click()
+                select = Select(select)
+                options_count = len(select.options)
+                if options_count > 1:
+                    select.select_by_index(random.randint(1, options_count - 1))
+                else:
+                    select.select_by_index(0)
+
             except Exception:
                 continue
 
 
 
         # Обработка radio
-        radio_buttons = form.find_elements(By.XPATH, ".//input[@type='radio']")
+        radio_buttons = form.find_elements(By.CSS_SELECTOR, "input[type='radio']")
         if radio_buttons:
             random.choice(radio_buttons).click()
+
 
         # Обработка checkbox
         checkboxes = form.find_elements(By.XPATH, ".//input[@type='checkbox']")
@@ -76,11 +80,12 @@ def run(driver, form, data):
                         )
                     else:
                         number_input.send_keys("11111")
+
                 except Exception:
                     continue
         tel_inputs = form.find_elements(By.CSS_SELECTOR, "input[type='tel']")
         for tel_input in tel_inputs:
-            if is_field_required(tel_input) and tel_input.get_attribute('value') == '':
+            if tel_input.get_attribute('value') == '':
                 try:
                     tel_input.clear()
                     tel_input.send_keys(phone_processor.run(driver,data['phone']))

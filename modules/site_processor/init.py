@@ -5,7 +5,7 @@ import time
 from selenium.webdriver.support import expected_conditions as EC
 
 import requests
-from selenium.common import WebDriverException
+from selenium.common import WebDriverException, StaleElementReferenceException, NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -49,54 +49,72 @@ class SiteProcessor:
             return "Stopped", ""
 
         try:
-            # Закрытие попапов
-            try:
-                WebDriverWait(self.driver, 5).until(
-                    EC.element_to_be_clickable((By.CSS_SELECTOR, "button[aria-label='Close']"))
-                ).click()
-            except Exception:
-                pass
-            #
-            # if "contact" not in self.driver.current_url:
-            #     contact_link = contact_link_finder.run(self.driver)
-            #     if contact_link:
-            #         self.driver.get(contact_link)
-            #         time.sleep(random.uniform(0.5, 1.5))
-            #         logging.info(f"Найдена контактная ссылка: {contact_link}")
-
+            WebDriverWait(self.driver, 5).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, "button[aria-label='Close']"))
+            ).click()
+        except Exception:
+            pass
+        #
+        # if "contact" not in self.driver.current_url:
+        #     contact_link = contact_link_finder.run(self.driver)
+        #     if contact_link:
+        #         self.driver.get(contact_link)
+        #         time.sleep(random.uniform(0.5, 1.5))
+        #         logging.info(f"Найдена контактная ссылка: {contact_link}")
+        form = None
+        try:
             form = form_finder.run(self.driver)
-            if not form and "contact" not in self.driver.current_url:
+        except Exception as e:
+            logging.error(f"Ошибка при поиске формы: {str(e)}")
+            pass
+        if not form and "contact" not in self.driver.current_url:
+            contact_link = None
+            try:
                 contact_link = contact_link_finder.run(self.driver)
-                if contact_link:
-                    self.driver.get(contact_link)
-                    time.sleep(random.uniform(0.5, 1.5))
-                    logging.info(f"Найдена контактная ссылка: {contact_link}")
+            except Exception as e:
+                logging.error(f"Ошибка при поиске контактной ссылки: {str(e)}")
+                pass
+            if contact_link:
+                self.driver.get(contact_link)
+                time.sleep(random.uniform(0.5, 1.5))
+                logging.info(f"Найдена контактная ссылка: {contact_link}")
+                try:
                     form = form_finder.run(self.driver)
+                except Exception as e:
+                    logging.error(f"Ошибка при поиске формы: {str(e)}")
+                    pass
+        if not form:
+            return "Error", "Форма не найдена"
 
-            if not form:
-                return "Error", "Форма не найдена"
-
+        try:
             fill_result, form = form_filler.run(self.driver, form, data['form_data'])
+        except Exception as e:
+            logging.error(f"Ошибка при заполнении формы: {str(e)}")
+            return "Error", "Ошибка заполнения формы"
 
-            if not fill_result:
-                return "Error", "Ошибка заполнения формы"
+        if not fill_result:
+            return "Error", "Ошибка заполнения формы"
 
-            # Обработка CAPTCHA, если есть
-            if self.driver.find_elements(By.ID, "g-recaptcha-response") or self.driver.find_elements(By.CLASS_NAME,
-                                                                                                     "g-recaptcha"):
+        # Обработка CAPTCHA, если есть
+        if self.driver.find_elements(By.ID, "g-recaptcha-response") or self.driver.find_elements(By.CLASS_NAME,
+                                                                                                 "g-recaptcha"):
+            try:
                 captcha_solver = CaptchaSolver(data['captcha_api_key'])
                 if not captcha_solver.solve_recaptcha(self.driver):
                     return "Error", "Ошибка CAPTCHA"
+            except Exception as e:
+                logging.error(f"Ошибка при решении CAPTCHA: {str(e)}")
+                return "Error", "Ошибка CAPTCHA"
+
+        try:
             submit_form = SubmitForm(self.driver, form, data['form_data'])
             return submit_form.run()
-
-            #
-            # if status != True:  # Проверяем статус. Если не True, значит ошибка.
-            #     return status, None
-            # else:
-            #     return "Error","Ошибка отправки формы"
-            #
-
+        except (NoSuchElementException, StaleElementReferenceException) as e:
+            # Если элемент исчез, значит форма отправлена
+            if "stale element not found" in str(e).lower():
+                return "Success", None
         except Exception as e:
-            logging.error(f"Общая ошибка: {str(e)}")
-            return "Error", "Ошибка элемента"
+            if "stale element not found" in str(e).lower():
+                return "Success", None
+            logging.error(f"Ошибка при отправке формы: {str(e)}")
+            return "Error", "Ошибка отправки формы"
