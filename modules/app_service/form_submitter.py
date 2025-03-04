@@ -13,7 +13,7 @@ from modules.site_runner import init
 
 
 class FormSubmitter:
-    def __init__(self):
+    def __init__(self, config):
         self.thread = None
         self.browser = None
         self.running = False
@@ -27,6 +27,7 @@ class FormSubmitter:
         self.config = None
         self.config_class = Config()
         self.config = self.config_class.init()
+        self.config = self.config_class.update_config(config)
         self.google_service = GoogleService(self.config)
         self.driver = None
         self.progress_window = None
@@ -45,6 +46,7 @@ class FormSubmitter:
     def update_config(self, new_config):
         """Обновление конфига с мерджем словарей"""
         self.config_class.update_config(new_config)
+        self.config = self.config_class.config
 
     def run_script(self):
         """Запуск скрипта"""

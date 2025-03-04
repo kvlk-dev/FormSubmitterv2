@@ -16,8 +16,6 @@ logging.basicConfig(
     filemode='a'
 )
 
-submitter = FormSubmitter()
-
 def start_script():
     global progress_window, current_thread
     start_button.config(text="Running...", state=tk.DISABLED)
@@ -42,7 +40,9 @@ def start_script():
         }
     }
 
-    submitter.update_config(config)
+    submitter = FormSubmitter(config)
+
+#    submitter.update_config(config)
     submitter.browser = browser_choice.get()
     submitter.set_progress_window(progress_window)
     submitter.stop_button = stop_button
@@ -117,7 +117,12 @@ def delete_current_profile():
 def load_selected_profile(event):
     name = profile_combobox.get()
     if not name:
-        return
+        # get the first profile from the list
+        profiles = profile_combobox['values']
+        if profiles:
+            name = profiles[0]
+        else:
+            return
 
     try:
         config = ProfileManager.load_profile(name)
@@ -167,6 +172,8 @@ def load_selected_profile(event):
 def update_profile_list():
     profiles = ProfileManager.get_profiles()
     profile_combobox['values'] = profiles
+    if profiles and not profile_combobox.get():
+        profile_combobox.set(profiles[0])
 
 
 def create_settings_frame(parent):
@@ -272,6 +279,8 @@ def main():
     stop_button = tk.Button(btn_frame, text="Stop", width=15, command=stop_script, state=tk.DISABLED)
     stop_button.pack(side=tk.LEFT, padx=5)
 
+    update_profile_list()
+    load_selected_profile(None)
     root.mainloop()
 
 

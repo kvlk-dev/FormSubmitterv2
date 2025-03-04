@@ -1,12 +1,11 @@
 import os
 import logging
-from dotenv import load_dotenv
 
 class Config:
     """Класс конфигурации приложения"""
     def __init__(self):
         self.config = self.init()
-        self.validate_config()
+ #       self.validate_config()
 
     def init(self):
 
@@ -16,32 +15,33 @@ class Config:
             filename='form_submitter.log'
         )
 
-        load_dotenv('.env')
 
-        initial_phone = os.getenv("PHONE")
         CONFIG = {
             'google_credentials': 'credentials.json',
-            'spreadsheet_name': os.getenv('SPREADSHEET_NAME'),
-            'worksheet_name': os.getenv('WORKSHEET_NAME'),
-            'drive_folder_id': os.getenv('DRIVE_FOLDER_ID'),
-            'captcha_api_key': os.getenv("CAPTCHA_API_KEY"),
+            'spreadsheet_name': "",
+            'worksheet_name': "",
+            'drive_folder_id': "",
+            'captcha_api_key': "",
             'form_data': {
-                "name": os.getenv("FIRST_NAME"),
-                "first": os.getenv("FIRST_NAME"),
-                "last": os.getenv("LAST_NAME"),
-                "phone": initial_phone,
-                "email": os.getenv("EMAIL"),
-                "message": os.getenv("MESSAGE"),
-                "subject": os.getenv("SUBJECT"),
-                "zip": os.getenv("ZIP"),
+                "name": "",
+                "first": "",
+                "last": "",
+                "phone": "",
+                "email": "",
+                "message": "",
+                "subject": "",
+                "zip": ""
             }
         }
+
 
         return CONFIG
 
     def update_config(self, new_config):
-            """Обновление конфига с мерджем словарей"""
-            self.config.update(new_config)
+        """Обновление конфига с мерджем словарей"""
+        self.config.update(new_config)
+        self.validate_config()
+        return self.config
 
     def validate_config(self):
             """Валидация обязательных параметров"""
