@@ -8,6 +8,7 @@ from modules.app_service.form_submitter import FormSubmitter
 from modules.app_service.progress_window import ProgressWindow
 from modules.app_service.text_handler import TextHandler
 from modules.app_service.profile_manager import ProfileManager
+import chromedriver_autoinstaller
 
 logging.basicConfig(
     level=logging.INFO,
@@ -20,6 +21,7 @@ def start_script():
     global progress_window, current_thread
     start_button.config(text="Running...", state=tk.DISABLED)
     stop_button.config(state=tk.NORMAL)
+    chromedriver_autoinstaller.install()
     root.update()
     progress_window = ProgressWindow(root)
     config = {
