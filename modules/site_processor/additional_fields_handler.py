@@ -20,16 +20,30 @@ def run(driver, form, data,filled_elements):
     try:
         actions = ActionChains(driver)
 
-        def human_click(element):
+        def human_click(element,click_on_label=False):
 
             """Имитирует человеческий клик"""
             try:
                 actions.reset_actions()
                 driver.execute_script("arguments[0].scrollIntoViewIfNeeded(true);", element)
-                WebDriverWait(driver, 3).until(EC.element_to_be_clickable(element))
-                actions.move_to_element(element).pause(random.uniform(0.1, 0.3)).click().perform()
+                if click_on_label:
+                    element_id = element.get_attribute('id')
+                    label = form.find_element(By.CSS_SELECTOR, f"label[for='{element_id}']")
+                    actions.move_to_element(label).pause(random.uniform(0.1, 0.3)).click().perform()
+                else:
+                    WebDriverWait(driver, 3).until(EC.element_to_be_clickable(element))
+                    actions.move_to_element(element).pause(random.uniform(0.1, 0.3)).click().perform()
             except Exception:
-                element.click()
+                logging.error(f"Ошибка при клике на элемент {element.get_attribute('id') or element.get_attribute('name') or element.get_attribute('class')}")
+                try:
+                    if click_on_label:
+                        label = form.find_element(By.CSS_SELECTOR, f"label[for='{element.get_attribute('id')}']")
+                        driver.execute_script("arguments[0].scrollIntoViewIfNeeded(true);", label)
+                        label.click()
+                    else:
+                        element.click()
+                except Exception:
+                    pass
 
         def human_type(element, text):
             """Имитирует человеческий ввод текста"""
@@ -69,16 +83,27 @@ def run(driver, form, data,filled_elements):
         select_fields = form.find_elements(By.TAG_NAME, 'select')
         for select in select_fields:
             try:
-                human_click(select)
-                options = select.find_elements(By.TAG_NAME, 'option')
+                select = Select(select)
+                # choose random option
+                options = select.options
                 if len(options) > 1:
                     option = options[random.randint(1, len(options) - 1)]
-                    human_click(option)
+                    select.select_by_visible_text(option.text)
                 else:
-                    human_click(options[0])
+                    select.select_by_index(0)
                 time.sleep(0.3)
             except Exception:
-                continue
+                try:
+                    human_click(select)
+                    options = select.find_elements(By.TAG_NAME, 'option')
+                    if len(options) > 1:
+                        option = options[random.randint(1, len(options) - 1)]
+                        human_click(option)
+                    else:
+                        human_click(options[0])
+                    time.sleep(0.3)
+                except Exception:
+                    continue
 
         # Обработка radio с паузами
         radio_buttons = form.find_elements(By.CSS_SELECTOR, "input[type='radio']")
@@ -90,7 +115,7 @@ def run(driver, form, data,filled_elements):
         for checkbox in checkboxes:
             try:
                 if random.choice([True, False]):
-                    human_click(checkbox)
+                    human_click(checkbox,True)
                     time.sleep(random.uniform(0.1, 0.4))
             except Exception:
                 continue
@@ -98,6 +123,9 @@ def run(driver, form, data,filled_elements):
         # Обработка текстовых полей
         text_inputs = form.find_elements(By.TAG_NAME, 'input')
                                          #"input[type='text'], input[type='email'], input[type='tel']")
+        text_inputs.extend(form.find_elements(By.XPATH, ".//input[not(@type='hidden')]"))
+        text_inputs.extend(form.find_elements(By.CSS_SELECTOR, "input"))
+
         for input_field in text_inputs:
             if input_field.get_attribute('type') == 'hidden' or input_field.get_attribute('type') == 'submit' or input_field.get_attribute('type') == 'radio' or input_field.get_attribute('type') == 'checkbox':
                 continue

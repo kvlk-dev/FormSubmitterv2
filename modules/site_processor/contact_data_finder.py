@@ -1,5 +1,6 @@
 import logging
 import re
+import urllib.parse
 
 from selenium.webdriver.common.by import By
 
@@ -16,9 +17,11 @@ def run(driver):
         for contact in contacts:
             if "mailto:" in contact.get_attribute("href"):
                 email = contact.get_attribute("href").replace("mailto:", "")
+                email = urllib.parse.unquote(email)
             elif "tel:" in contact.get_attribute("href"):
                 phone = contact.get_attribute("href").replace("tel:", "")
-        # оставляем только цифры в номере
+                phone = urllib.parse.unquote(phone)
+
         if phone:
             phone = re.sub(r'\D', '', phone)
         return email, phone

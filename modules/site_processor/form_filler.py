@@ -14,6 +14,7 @@ from modules.site_processor import phone_processor, additional_fields_handler
 def run(driver, form, data):
     """Заполнение формы"""
     try:
+
         filled_elements = []
         actions = ActionChains(driver)
         driver.execute_script("arguments[0].scrollIntoView({behavior: 'smooth', block: 'center'});", form)
@@ -59,19 +60,28 @@ def run(driver, form, data):
                     for digit in value:
                         actions.send_keys(digit)
                         actions.pause(random.uniform(0.05, 0.2))
+                    actions.perform()
                 else:
-                    actions.send_keys_to_element(element, value)
+                    actions.send_keys_to_element(element, value).perform()
                     actions.pause(random.uniform(0.05, 0.2))
-                actions.perform()
+
                 filled_elements.append(element)
 
-                time.sleep(random.uniform(0.2, 0.5))
+            #    time.sleep(random.uniform(0.2, 0.5))
 
-            except (WebDriverException, TimeoutException) as e:
-                if element.is_displayed() and element.is_enabled():
-                    logging.warning(f"Alternative fill method for {element.get_attribute('id')}")
-                    element.clear()
-                    element.send_keys(value)
+            except Exception as e:
+                try:
+                    if element.is_displayed() and element.is_enabled():
+                        logging.warning(f"Alternative fill method for {element.get_attribute('id')}")
+                        element.clear()
+                        element.send_keys(value)
+                        filled_elements.append(element)
+                except WebDriverException:
+                    logging.error(f"Element {element.get_attribute('id')} is not interactable")
+                except Exception as e:
+                    logging.error(f"Error while filling element {element.get_attribute('id')}: {str(e)}")
+                    logging.error(traceback.format_exc())
+                    pass
         # for element in form.find_elements(By.XPATH, ".//input[not(@type='hidden')]"):
         #     for attr in ['id', 'name', 'placeholder', 'aria-label']:
         #         value = (element.get_attribute(attr) or '').strip().lower()
@@ -83,16 +93,22 @@ def run(driver, form, data):
         #                     #     element_value = phone_processor.run(driver, data['phone'])
         #                     fill_element(element, element_value)
         #                     break
-
-        for textarea in form.find_elements(By.TAG_NAME, 'textarea'):
+        textareas = form.find_elements(By.TAG_NAME, 'textarea')
+        for textarea in textareas:
             t_fill = False
+            # if textarea only one
+            print(len(textareas))
+            if textareas and len(textareas) == 1 and textarea.is_displayed():
+                fill_element(textarea, data['message'])
+                t_fill = True
 
-            for attr in ['id', 'name', 'placeholder','aria-label']:
-                value = (textarea.get_attribute(attr) or '').strip().lower()
-                if value and ("message" in value or "comment" in value or "feedback" in value or "text" in value or "description" in value or "reason" in value or "details" in value or "inquiry" in value):
-                    fill_element(textarea, data['message'])
-                    t_fill = True
-                    break
+            if not t_fill:
+                for attr in ['id', 'name', 'placeholder','aria-label']:
+                    value = (textarea.get_attribute(attr) or '').strip().lower()
+                    if value and ("message" in value or "comment" in value or "feedback" in value or "text" in value or "description" in value or "reason" in value or "details" in value or "inquiry" in value or "tell" in value or "write" in value):
+                        fill_element(textarea, data['message'])
+                        t_fill = True
+                        continue
             if not t_fill and textarea.is_displayed():
                 fill_element(textarea, "soon")
 
@@ -104,6 +120,7 @@ def run(driver, form, data):
                 fill_element(input_field, data['email'])
 
                 found = True
+
             if input_field.get_attribute('type') == 'tel':
                 fill_element(input_field, data['phone'])
                 found = True

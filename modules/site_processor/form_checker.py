@@ -1,4 +1,5 @@
 import logging
+from http.client import error
 
 from selenium.common.exceptions import TimeoutException, StaleElementReferenceException, NoSuchElementException
 from selenium.webdriver.support import expected_conditions as EC
@@ -30,7 +31,17 @@ class FormChecker:
 
     def _form_state_changed(self, driver):
         """Проверка изменения состояния формы"""
-        return self._is_form_removed() or self._is_form_hidden()
+        return self._is_form_removed() or self._is_form_hidden() or self._are_errors_present()
+
+    def _are_errors_present(self):
+        """Проверка наличия ошибок"""
+        try:
+            # Поиск элементов с ошибками
+            errors = self.form.find_elements(By.XPATH, ".//*[contains(@class, 'error') or contains(@class, 'invalid')]")
+            logging.info(f"Найдено {len(errors)} элементов с ошибками")
+            return bool(errors)
+        except (StaleElementReferenceException, NoSuchElementException):
+            return
 
     def _check_success_conditions(self):
         """Проверка условий успешной отправки"""
@@ -38,12 +49,13 @@ class FormChecker:
             logging.info("Форма удалена из DOM")
             return True
 
+
         return self._is_form_hidden() and self._are_fields_cleared()
 
     def _is_form_removed(self):
         """Проверка полного удаления формы из DOM"""
         try:
-            WebDriverWait(self.driver, 15).until(EC.staleness_of(self.form))
+            WebDriverWait(self.driver, self.timeout).until(EC.staleness_of(self.form))
             return True
         except TimeoutException:
             try:

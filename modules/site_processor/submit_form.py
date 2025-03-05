@@ -49,9 +49,14 @@ class SubmitForm:
                     logging.error(f"Ошибка при нажатии Enter: {str(e)}")
                     pass
             time.sleep(random.uniform(3, 5))
-            if form_checker.is_form_successful():
-                return "Success", None
-            else:
+            try:
+                if form_checker.is_form_successful():
+                    return "Success", None
+                else:
+                    return "Error", "Ошибка при отправке формы"
+            except Exception as e:
+                logging.error(f"Ошибка при проверке успешности отправки формы: {str(e)}")
+                logging.error(traceback.format_exc())
                 return "Error", "Ошибка при отправке формы"
             #     errors_detector = ErrorsDetector(self.driver, self.form, self.data)
             #     status = errors_detector.run()
